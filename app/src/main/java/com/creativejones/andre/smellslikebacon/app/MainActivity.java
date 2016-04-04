@@ -1,31 +1,34 @@
 package com.creativejones.andre.smellslikebacon.app;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.creativejones.andre.smellslikebacon.R;
-import com.creativejones.andre.smellslikebacon.models.Recipes;
 
 public class MainActivity extends AppCompatActivity implements ListFragment.OnRecipeSelected {
+
+    public static final String LIST_FRAGMENT = "list_fragment";
+    public static final String VIEWPAGER_FRAGMENT = "viewpager_fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListFragment savedFragment = (ListFragment) getFragmentManager().findFragmentById(R.id.placeHolder);
+        ListFragment savedFragment = (ListFragment) getSupportFragmentManager()
+                                                    .findFragmentByTag(LIST_FRAGMENT);
 
         if(savedFragment == null) {
             ListFragment fragment = new ListFragment();
 
-            FragmentManager fragmentManager = getFragmentManager();
+            FragmentManager fragmentManager = getSupportFragmentManager();
 
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-            fragmentTransaction.add(R.id.placeHolder, fragment);
+            fragmentTransaction.add(R.id.placeHolder, fragment, LIST_FRAGMENT);  //add
 
             fragmentTransaction.commit();
         }
@@ -34,6 +37,22 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnRe
 
     @Override
     public void onListRecipeSelected(int index) {
-        Toast.makeText(this, Recipes.names[index], Toast.LENGTH_SHORT).show();
+        ViewPagerFragment fragment = new ViewPagerFragment();
+
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(ViewPagerFragment.KEY_RECIPE_INDEX, index);
+
+        fragment.setArguments(bundle);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.placeHolder, fragment, VIEWPAGER_FRAGMENT);  //replace
+
+        fragmentTransaction.addToBackStack(null); //need to override the onBackPressedButton
+
+        fragmentTransaction.commit();
     }
 }
