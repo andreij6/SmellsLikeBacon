@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import com.creativejones.andre.smellslikebacon.R;
 
-public class MainActivity extends AppCompatActivity implements ListFragment.OnRecipeSelected {
+public class MainActivity extends AppCompatActivity implements ListFragment.OnRecipeSelected, GridFragment.OnRecipeSelected {
 
     public static final String LIST_FRAGMENT = "list_fragment";
     public static final String VIEWPAGER_FRAGMENT = "viewpager_fragment";
@@ -18,26 +18,70 @@ public class MainActivity extends AppCompatActivity implements ListFragment.OnRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListFragment savedFragment = (ListFragment) getSupportFragmentManager()
-                                                    .findFragmentByTag(LIST_FRAGMENT);
+        boolean isTablet = getResources().getBoolean(R.bool.is_tablet);
 
-        if(savedFragment == null) {
-            ListFragment fragment = new ListFragment();
+        if(!isTablet){
+            ListFragment savedFragment = (ListFragment) getSupportFragmentManager()
+                    .findFragmentByTag(LIST_FRAGMENT);
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
+            if(savedFragment == null) {
 
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                ListFragment fragment = new ListFragment();
 
-            fragmentTransaction.add(R.id.placeHolder, fragment, LIST_FRAGMENT);  //add
+                FragmentManager fragmentManager = getSupportFragmentManager();
 
-            fragmentTransaction.commit();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                fragmentTransaction.add(R.id.placeHolder, fragment, LIST_FRAGMENT);  //add
+
+                fragmentTransaction.commit();
+            }
+        } else {
+            GridFragment savedFragment = (GridFragment) getSupportFragmentManager()
+                    .findFragmentByTag(LIST_FRAGMENT);
+
+            if(savedFragment == null) {
+
+                GridFragment fragment = new GridFragment();
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                fragmentTransaction.add(R.id.placeHolder, fragment, LIST_FRAGMENT);  //add
+
+                fragmentTransaction.commit();
+            }
         }
+
+
 
     }
 
     @Override
     public void onListRecipeSelected(int index) {
         ViewPagerFragment fragment = new ViewPagerFragment();
+
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(ViewPagerFragment.KEY_RECIPE_INDEX, index);
+
+        fragment.setArguments(bundle);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.placeHolder, fragment, VIEWPAGER_FRAGMENT);  //replace
+
+        fragmentTransaction.addToBackStack(null); //need to override the onBackPressedButton
+
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onGridRecipeSelected(int index) {
+        DualPaneFragment fragment = new DualPaneFragment();
 
         Bundle bundle = new Bundle();
 
