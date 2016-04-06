@@ -28,8 +28,17 @@ public class ViewPagerFragment extends Fragment {
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPager);
 
-        final IngredientsFragment ingredientsFragment = new IngredientsFragment();
-        final DirectionsFragment directionsFragment = new DirectionsFragment();
+        final CheckBoxesFragment ingredientsFragment = new IngredientsFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(KEY_RECIPE_INDEX, index);
+        ingredientsFragment.setArguments(bundle);
+
+        final CheckBoxesFragment directionsFragment = new DirectionsFragment();
+
+        Bundle dbundle = new Bundle();
+        dbundle.putInt(KEY_RECIPE_INDEX, index);
+        directionsFragment.setArguments(dbundle);
 
         //when dealing with fragments within fragments we need to use the child fragment manager
         viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()) {
